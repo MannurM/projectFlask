@@ -227,3 +227,6 @@ fabric.properties
 /chatbot/token.txt
 /chatbot/group_id
 /chatbot/token_1.py
+/lesson_015/dungeon.csv
+/chatbot/settings.txt
+/chatbot/settings.py

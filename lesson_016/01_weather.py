@@ -46,3 +46,97 @@
 # Приконнектится по полученному url-пути к базе данных
 # Инициализировать её через DatabaseProxy()
 # https://peewee.readthedocs.io/en/latest/peewee/database.html#dynamically-defining-a-database
+import requests
+
+
+class WeatherMaker:
+    """
+     Создать модуль-движок с классом WeatherMaker, необходимым для получения и формирования предсказаний.
+     В нём должен быть метод, получающий прогноз с выбранного вами сайта (парсинг + re) за некоторый диапазон дат,
+     а затем, получив данные, сформировать их в словарь {погода: Облачная, температура: 10, дата:datetime...}
+    """
+    def __init__(self):
+        pass
+
+    def parsing_data(self):
+        pass
+        # ! response = requests.get()
+
+        # !!with open(filename, 'wb') as fd:
+        #         for chunk in r.iter_content(chunk_size=128):
+        #             fd.write(chunk)
+
+        #
+
+    def create_dict(self):
+        pass
+
+
+class ImageMaker:
+    """
+    Добавить класс ImageMaker.
+    Снабдить его методом рисования открытки
+    (использовать OpenCV, в качестве заготовки брать lesson_016/python_snippets/external_data/probe.jpg):
+      С текстом, состоящим из полученных данных (пригодится cv2.putText)
+      С изображением, соответствующим типу погоды
+    (хранятся в lesson_016/python_snippets/external_data/weather_img ,но можно нарисовать/добавить свои)
+      В качестве фона добавить градиент цвета, отражающего тип погоды
+    Солнечно - от желтого к белому
+    Дождь - от синего к белому
+    Снег - от голубого к белому
+    Облачно - от серого к белому
+    """
+    def __init__(self):
+        pass
+
+    def create_image(self):
+        pass
+
+
+class DatabaseUpdater:
+    """
+    Добавить класс DatabaseUpdater с методами:
+    Получающим данные из базы данных за указанный диапазон дат.
+    Сохраняющим прогнозы в базу данных (использовать peewee)
+    """
+    def __init__(self):
+        pass
+
+    def read_database(self):
+        pass
+
+    def add_database(self):
+        pass
+
+    def save_database(self):
+        pass
+
+
+class ConsolInterface:
+    """
+    Сделать программу с консольным интерфейсом, постаравшись все выполняемые действия вынести в отдельные функции.
+    Среди действий, доступных пользователю, должны быть:
+      Добавление прогнозов за диапазон дат в базу данных
+      Получение прогнозов за диапазон дат из базы
+      Создание открыток из полученных прогнозов
+      Выведение полученных прогнозов на консоль
+    При старте консольная утилита должна загружать прогнозы за прошедшую неделю.
+    """
+    def __init__(self):
+        pass
+
+    def range_selection(self):
+        pass
+
+    def create_forecasts(self):
+        pass
+
+    def create_images(self):
+        pass
+
+    def print_console(self):
+        pass
+
+
+if __name__ == '__main__':
+    pass
