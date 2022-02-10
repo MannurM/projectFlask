@@ -47,7 +47,8 @@
 # Инициализировать её через DatabaseProxy()
 # https://peewee.readthedocs.io/en/latest/peewee/database.html#dynamically-defining-a-database
 import requests
-
+from html.parser import HTMLParser
+from bs4 import BeautifulSoup
 
 class WeatherMaker:
     """
@@ -59,7 +60,15 @@ class WeatherMaker:
         pass
 
     def parsing_data(self):
-        pass
+        response = requests.get('https://www.gismeteo.ru/weather-chelno-vershiny-4580/')
+        if response.status_code == 200:
+            html_doc = BeautifulSoup(response.text, features='html.parser')
+            list_of_values = html_doc.find_all('span', {'class': 'inline-stocks__value_inner'})
+            list_of_names = html_doc.find_all('a', {'class': 'home-link home-link_black_yes inline-stocks__link'})
+
+            for names, values in zip(list_of_names, list_of_values):
+                print(names.text, values.text)
+
         # ! response = requests.get()
 
         # !!with open(filename, 'wb') as fd:
@@ -70,6 +79,18 @@ class WeatherMaker:
 
     def create_dict(self):
         pass
+
+    class MyHTMLParser(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            print(f'Encountered a start tag: <{tag}>')
+
+        def handle_endtag(self, tag):
+            print(f'Encountered an end tag : </{tag}>')
+
+        def handle_data(self, data):
+            print(f'Encountered some data  : "{data}"')
+
+
 
 
 class ImageMaker:
