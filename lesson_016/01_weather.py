@@ -46,8 +46,9 @@
 # Приконнектится по полученному url-пути к базе данных
 # Инициализировать её через DatabaseProxy()
 # https://peewee.readthedocs.io/en/latest/peewee/database.html#dynamically-defining-a-database
-import requests
-from html.parser import HTMLParser
+
+import requests, re
+
 from bs4 import BeautifulSoup
 
 class WeatherMaker:
@@ -57,40 +58,66 @@ class WeatherMaker:
      а затем, получив данные, сформировать их в словарь {погода: Облачная, температура: 10, дата:datetime...}
     """
     def __init__(self):
-        pass
+        self.response = None
+        self.src = None
+        self.file_name = None
 
     def parsing_data(self):
-        response = requests.get('https://www.gismeteo.ru/weather-chelno-vershiny-4580/')
-        if response.status_code == 200:
-            html_doc = BeautifulSoup(response.text, features='html.parser')
-            list_of_values = html_doc.find_all('span', {'class': 'inline-stocks__value_inner'})
-            list_of_names = html_doc.find_all('a', {'class': 'home-link home-link_black_yes inline-stocks__link'})
-
-            for names, values in zip(list_of_names, list_of_values):
-                print(names.text, values.text)
-
-        # ! response = requests.get()
-
-        # !!with open(filename, 'wb') as fd:
-        #         for chunk in r.iter_content(chunk_size=128):
-        #             fd.write(chunk)
-
-        #
-
-    def create_dict(self):
-        pass
-
-    class MyHTMLParser(HTMLParser):
-        def handle_starttag(self, tag, attrs):
-            print(f'Encountered a start tag: <{tag}>')
-
-        def handle_endtag(self, tag):
-            print(f'Encountered an end tag : </{tag}>')
-
-        def handle_data(self, data):
-            print(f'Encountered some data  : "{data}"')
+        url = 'https://darksky.net/forecast/54.4123,51.0794/si12/en'
+        headers = {
+            'Accept' : '*/*',
+            'User-Agent': ''
+        }
+        self.response = requests.get(url, headers=headers)
+        self.src = self.response.text
+        return self.src
 
 
+    def save_page(self, src): # Сохранение спарсенной страницы в файл
+        self.src = src
+        self.file_name = 'index.html'
+        with open(self.file_name, 'w', encoding='utf-8') as file:
+            file.write(self.src)
+        return self.file_name
+
+
+    def open_page(self, file_name):  # открыть файл html
+        self.file_name = file_name
+        file_name = 'index.html'
+        with open(file_name, encoding='utf-8') as file:
+            self.response = file.read()
+
+        html_doc = BeautifulSoup(self.response, "html5lib")
+        # Облачность, Осадки, мм
+        list_val_precipitation = html_doc.find_all('div', class_="dayDetails")
+        list_prec, list_count, list_cloud = [], [], []
+        for item in list_val_precipitation:
+            val_precipitation = item.find('span', class_="label swip")
+            val_count_prec = item.find('span', class_="num swip")
+            val_cloud_status = item.find('div', class_='summary')
+            list_prec.append(val_precipitation)
+            list_count.append(val_count_prec)
+            list_cloud.append(val_cloud_status)
+        # Дни, диапазон температур
+        list_temp = html_doc.find_all('a', class_="day")
+        dict_data_temp = {}
+        for number, item in enumerate(list_temp):
+            dict_day_temp = {}
+            val_low = item.find('span', class_='minTemp')
+            val_high = item.find('span', class_='maxTemp')
+            val_range = (val_low.text, val_high.text)
+            # re - использовать для отделения лишних знаков
+            val_name_day = item.find('span', class_='name')
+            val_name_day = val_name_day.text
+            val = re.sub("[^A-Za-z]", "", val_name_day)
+            val_name_day = val
+            # Создание словаря с данными погоды за 8 дней
+            gen_temp_prec, gen_temp_count, gen_temp_cloud = list_prec[number], list_count[number], list_cloud[number]
+            dict_day_temp['Облачность'] = gen_temp_cloud.text
+            dict_day_temp['Температура'] = val_range
+            dict_day_temp['Осадки'] = (gen_temp_prec.text, gen_temp_count.text)
+            dict_data_temp[val_name_day] = dict_day_temp  # или лучше список словарей??
+        return dict_data_temp
 
 
 class ImageMaker:
@@ -159,5 +186,15 @@ class ConsolInterface:
         pass
 
 
+dict_weather = {}
+
+def main():
+    wm = WeatherMaker()
+    src = wm.parsing_data()
+    file_name = wm.save_page(src)
+    dict_weather = wm.open_page(file_name)
+    print(dict_weather)
+
+
 if __name__ == '__main__':
-    pass
+   main()
