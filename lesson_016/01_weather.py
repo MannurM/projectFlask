@@ -46,9 +46,8 @@
 # Приконнектится по полученному url-пути к базе данных
 # Инициализировать её через DatabaseProxy()
 # https://peewee.readthedocs.io/en/latest/peewee/database.html#dynamically-defining-a-database
-
-import requests, re
-
+import requests
+import re
 from bs4 import BeautifulSoup
 
 class WeatherMaker:
