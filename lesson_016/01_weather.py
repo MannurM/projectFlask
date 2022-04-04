@@ -71,14 +71,12 @@ class WeatherMaker:
         self.src = self.response.text
         return self.src
 
-
     def save_page(self, src): # Сохранение спарсенной страницы в файл
         self.src = src
         self.file_name = 'index.html'
         with open(self.file_name, 'w', encoding='utf-8') as file:
             file.write(self.src)
         return self.file_name
-
 
     def open_page(self, file_name):  # открыть файл html
         self.file_name = file_name
